@@ -1,0 +1,116 @@
+SELECT
+  -- 기본 방문자 정보
+  fullVisitorId,
+  channelGrouping,
+  visitNumber,
+  visitStartTime, -- 용기 추가
+   date,
+   visitId,
+   
+  -- totals (세션 통계)
+  totals.hits,
+  totals.pageviews,
+  totals.timeOnSite,
+  totals.newVisits,
+  totals.transactionRevenue,
+  totals.transactions,
+  totals.bounces,
+  totals.totalTransactionRevenue,
+
+  -- 유입 정보
+  trafficSource.campaign,
+  trafficSource.referralPath,
+  trafficSource.medium,
+  trafficSource.keyword,
+  trafficSource.adContent,
+
+  -- 디바이스 정보
+  device.browser,
+  device.deviceCategory,
+  device.isMobile,
+  device.operatingSystem,
+
+  -- 지역 정보
+  geoNetwork.continent,
+  geoNetwork.longitude,
+  geoNetwork.latitude,
+  geoNetwork.city,
+  geoNetwork.region,
+  geoNetwork.metro,
+  geoNetwork.country,
+  geoNetwork.subContinent,
+
+  -- 히트 정보
+  hit.hitNumber,
+  hit.referer,
+  hit.isExit,
+  hit.isEntrance,
+  hit.isInteraction,
+  hit.minute,
+  hit.hour,
+  hit.time,
+  hit.type,
+  hit.dataSource,
+
+  -- 페이지 정보
+  hit.page.pagePath,
+  hit.page.pageTitle,
+
+  -- 앱 정보
+  hit.appInfo.screenName,
+  hit.appInfo.exitScreenName,
+  hit.appInfo.landingScreenName,
+
+  -- 예외 정보
+  hit.exceptionInfo.isFatal,
+
+  -- 이벤트 정보
+  hit.eventInfo.eventAction,
+  hit.eventInfo.eventLabel,
+
+  -- 상품 정보 (UNNEST)
+  product.v2ProductName,
+  product.productListPosition,
+  product.productListName,
+  product.isClick,
+  product.isImpression,
+  product.productQuantity,
+  product.productPrice,
+  product.productRevenue,
+  product.v2ProductCategory,
+
+  -- 프로모션 정보 (UNNEST)
+  promotion.promoId,
+  promotion.promoPosition,
+  promotion.promoCreative,
+  promotion.promoName,
+  hit.promotionActionInfo.promoIsClick,
+
+  -- 이커머스 행동 정보
+  hit.eCommerceAction.action_type,
+  hit.eCommerceAction.step,
+
+  -- 소셜 정보
+  hit.social.socialNetwork,
+  hit.social.hasSocialSourceReferral,
+
+  -- 콘텐츠 그룹
+  hit.contentGroup.contentGroup1,
+  hit.contentGroup.contentGroup2,
+  hit.contentGroup.contentGroup3,
+  hit.contentGroup.previousContentGroup1,
+  hit.contentGroup.previousContentGroup2,
+  hit.contentGroup.previousContentGroup3,
+  hit.contentGroup.contentGroupUniqueViews1,
+  hit.contentGroup.contentGroupUniqueViews2,
+  hit.contentGroup.contentGroupUniqueViews3,
+ 
+
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`,
+  UNNEST(hits) AS hit
+  LEFT JOIN UNNEST(hit.product) AS product
+  LEFT JOIN UNNEST(hit.promotion) AS promotion
+
+WHERE
+  _TABLE_SUFFIX BETWEEN '20160801' AND '20170801'
+;
