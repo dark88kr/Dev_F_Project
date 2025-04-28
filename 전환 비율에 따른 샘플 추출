@@ -1,0 +1,196 @@
+-- (1) 전환 세션: 640건
+(
+  SELECT
+    fullVisitorId,
+    channelGrouping,
+    visitNumber,
+
+    totals.hits,
+    totals.pageviews,
+    totals.timeOnSite,
+    totals.newVisits,
+    totals.transactionRevenue,
+    totals.transactions,
+    totals.bounces,
+    totals.totalTransactionRevenue,
+
+    trafficSource.campaign,
+    trafficSource.referralPath,
+    trafficSource.medium,
+
+    device.browser,
+    device.deviceCategory,
+    device.isMobile,
+    device.operatingSystem,
+
+    geoNetwork.continent,
+    geoNetwork.longitude,
+    geoNetwork.latitude,
+    geoNetwork.city,
+    geoNetwork.region,
+    geoNetwork.country,
+    geoNetwork.subContinent,
+
+    hit.hitNumber,
+    hit.referer,
+    hit.isExit,
+    hit.isEntrance,
+    hit.isInteraction,
+    hit.minute,
+    hit.hour,
+    hit.time,
+    hit.type,
+    hit.dataSource,
+
+    hit.page.pagePath,
+    hit.page.pageTitle,
+
+    hit.appInfo.screenName,
+    hit.appInfo.exitScreenName,
+    hit.appInfo.landingScreenName,
+
+    hit.exceptionInfo.isFatal,
+
+    hit.eventInfo.eventAction,
+    hit.eventInfo.eventLabel,
+
+    product.v2ProductName,
+    product.productListPosition,
+    product.productListName,
+    product.isClick,
+    product.isImpression,
+    product.productQuantity,
+    product.productPrice,
+    product.productRevenue,
+    product.v2ProductCategory,
+
+    promotion.promoId,
+    promotion.promoPosition,
+    promotion.promoCreative,
+    promotion.promoName,
+    hit.promotionActionInfo.promoIsClick,
+
+    hit.eCommerceAction.action_type,
+    hit.eCommerceAction.step,
+
+    hit.social.socialNetwork,
+    hit.social.hasSocialSourceReferral,
+
+    hit.contentGroup.contentGroup1,
+    hit.contentGroup.previousContentGroup1,
+    hit.contentGroup.contentGroupUniqueViews3,
+    hit.contentGroup.contentGroupUniqueViews2,
+    hit.contentGroup.contentGroupUniqueViews1,
+    hit.contentGroup.previousContentGroup2,
+    hit.contentGroup.contentGroup2
+
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`,
+    UNNEST(hits) AS hit
+    LEFT JOIN UNNEST(hit.product) AS product
+    LEFT JOIN UNNEST(hit.promotion) AS promotion
+
+  WHERE
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170801'
+    AND totals.transactions IS NOT NULL
+  LIMIT 640
+)
+
+UNION ALL
+
+-- (2) 비전환 세션: 49,360건
+(
+  SELECT
+    fullVisitorId,
+    channelGrouping,
+    visitNumber,
+
+    totals.hits,
+    totals.pageviews,
+    totals.timeOnSite,
+    totals.newVisits,
+    totals.transactionRevenue,
+    totals.transactions,
+    totals.bounces,
+    totals.totalTransactionRevenue,
+
+    trafficSource.campaign,
+    trafficSource.referralPath,
+    trafficSource.medium,
+
+    device.browser,
+    device.deviceCategory,
+    device.isMobile,
+    device.operatingSystem,
+
+    geoNetwork.continent,
+    geoNetwork.longitude,
+    geoNetwork.latitude,
+    geoNetwork.city,
+    geoNetwork.region,
+    geoNetwork.country,
+    geoNetwork.subContinent,
+
+    hit.hitNumber,
+    hit.referer,
+    hit.isExit,
+    hit.isEntrance,
+    hit.isInteraction,
+    hit.minute,
+    hit.hour,
+    hit.time,
+    hit.type,
+    hit.dataSource,
+
+    hit.page.pagePath,
+    hit.page.pageTitle,
+
+    hit.appInfo.screenName,
+    hit.appInfo.exitScreenName,
+    hit.appInfo.landingScreenName,
+
+    hit.exceptionInfo.isFatal,
+
+    hit.eventInfo.eventAction,
+    hit.eventInfo.eventLabel,
+
+    product.v2ProductName,
+    product.productListPosition,
+    product.productListName,
+    product.isClick,
+    product.isImpression,
+    product.productQuantity,
+    product.productPrice,
+    product.productRevenue,
+    product.v2ProductCategory,
+
+    promotion.promoId,
+    promotion.promoPosition,
+    promotion.promoCreative,
+    promotion.promoName,
+    hit.promotionActionInfo.promoIsClick,
+
+    hit.eCommerceAction.action_type,
+    hit.eCommerceAction.step,
+
+    hit.social.socialNetwork,
+    hit.social.hasSocialSourceReferral,
+
+    hit.contentGroup.contentGroup1,
+    hit.contentGroup.previousContentGroup1,
+    hit.contentGroup.contentGroupUniqueViews3,
+    hit.contentGroup.contentGroupUniqueViews2,
+    hit.contentGroup.contentGroupUniqueViews1,
+    hit.contentGroup.previousContentGroup2,
+    hit.contentGroup.contentGroup2
+
+  FROM `bigquery-public-data.google_analytics_sample.ga_sessions_*`,
+    UNNEST(hits) AS hit
+    LEFT JOIN UNNEST(hit.product) AS product
+    LEFT JOIN UNNEST(hit.promotion) AS promotion
+
+  WHERE
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170801'
+    AND totals.transactions IS NULL
+  ORDER BY RAND()
+  LIMIT 49360
+)
