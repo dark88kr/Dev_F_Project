@@ -1,0 +1,71 @@
+!apt-get install graphviz
+!pip install graphviz
+
+import graphviz
+from IPython.display import Image
+
+# 그래프 정의
+dot = graphviz.Digraph(comment='ga_sessions Table Structure', format='png')
+
+# Root
+dot.node('ga_sessions', 'ga_sessions (Root Table)', shape='box', style='filled', fillcolor='#ffefcc')
+
+# Top-level fields
+top_level_fields = [
+    'fullVisitorId', 'visitId', 'visitStartTime', 'channelGrouping',
+    'date', 'visitNumber', 'socialEngagementType', 'userId',
+    'trafficSource', 'device', 'geoNetwork', 'totals', 'hits', 'customDimensions'
+]
+
+for field in top_level_fields:
+    dot.node(field, field, shape='box')
+    dot.edge('ga_sessions', field)
+
+# trafficSource
+traffic_source_fields = ['campaign', 'source', 'medium', 'keyword', 'adContent']
+for field in traffic_source_fields:
+    dot.node(f'ts_{field}', f'trafficSource.{field}', shape='ellipse')
+    dot.edge('trafficSource', f'ts_{field}')
+
+# device
+device_fields = ['browser', 'operatingSystem', 'isMobile', 'deviceCategory']
+for field in device_fields:
+    dot.node(f'd_{field}', f'device.{field}', shape='ellipse')
+    dot.edge('device', f'd_{field}')
+
+# geoNetwork
+geo_fields = ['continent', 'country', 'region', 'city']
+for field in geo_fields:
+    dot.node(f'g_{field}', f'geoNetwork.{field}', shape='ellipse')
+    dot.edge('geoNetwork', f'g_{field}')
+
+# totals
+totals_fields = ['visits', 'hits', 'pageviews', 'transactions', 'transactionRevenue', 'timeOnSite']
+for field in totals_fields:
+    dot.node(f't_{field}', f'totals.{field}', shape='ellipse')
+    dot.edge('totals', f't_{field}')
+
+# hits (REPEATED)
+dot.node('hit', 'hits[]', shape='box', style='filled', fillcolor='#d2f0ff')
+dot.edge('hits', 'hit')
+
+hit_fields = ['hitNumber', 'type', 'time', 'page', 'eventInfo', 'transaction', 'contentGroup']
+for field in hit_fields:
+    dot.node(f'h_{field}', f'hits.{field}', shape='box')
+    dot.edge('hit', f'h_{field}')
+
+# hits.page
+page_fields = ['pagePath', 'pageTitle']
+for field in page_fields:
+    dot.node(f'hp_{field}', f'page.{field}', shape='ellipse')
+    dot.edge('h_page', f'hp_{field}')
+
+# hits.eventInfo
+event_fields = ['eventCategory', 'eventAction', 'eventLabel']
+for field in event_fields:
+    dot.node(f'he_{field}', f'eventInfo.{field}', shape='ellipse')
+    dot.edge('h_eventInfo', f'he_{field}')
+
+# 저장 및 표시
+dot.render('ga_sessions_structure', format='png', cleanup=True)
+Image('ga_sessions_structure.png')
